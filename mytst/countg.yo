@@ -1,0 +1,38 @@
+                            | #This program counts the number of positive (> 0)
+                            | #numbers in a list. 
+0x000:                      |         .pos 0
+                            | #
+                            | #Initialize %rax to 0
+0x000: 30f77000000000000000 |         irmovq nums, %rdi
+0x00a: 30f00000000000000000 |         irmovq 0, %rax
+0x014: 30fd9800000000000000 | top:    irmovq count, %r13
+0x01e: 30fc0800000000000000 |         irmovq 8, %r12
+                            | #Get a number out of the list
+0x028: 50170000000000000000 |         mrmovq (%rdi), %rcx
+                            | #Determine if the number is positive (you'll need a subtract)
+0x032: 30f20000000000000000 |         irmovq 0, %rdx
+0x03c: 30f30100000000000000 |         irmovq 1, %rbx
+0x046: 6121                 |         subq %rdx, %rcx
+                            | #Add one to %rax if it is positive (you'll need a conditional move)
+0x048: 2634                 |         cmovg %rbx, %rsp
+0x04a: 2224                 |         cmovl %rdx, %rsp
+0x04c: 6040                 |         addq %rsp, %rax
+                            | #Repeat for each of the five numbers 
+0x04e: 60c7                 |         addq %r12, %rdi
+0x050: 617d                 |         subq %rdi, %r13
+0x052: 741400000000000000   |         jne top
+                            | #
+                            | #At the end, %rax should have the count of the number
+                            | #of positive numbers (3 for this data)
+                            | #Store the value of %rax in mem[count]
+0x05b: 30f99800000000000000 |         irmovq count, %r9
+0x065: 40090000000000000000 |         rmmovq %rax, (%r9) 
+0x06f: 00                   |         halt
+                            | #Here is the list of numbers
+0x070:                      |         .align 8
+0x070: 2300000000000000     | nums:   .quad 0x23
+0x078: 1300000000000000     |         .quad 0x13
+0x080: f8ffffffffffffff     |         .quad 0xfffffffffffffff8
+0x088: 0000000000000000     |         .quad 0x0
+0x090: 1100000000000000     |         .quad 0x11
+0x098: 0000000000000000     | count:  .quad 0

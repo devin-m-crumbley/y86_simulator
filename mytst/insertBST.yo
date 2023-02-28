@@ -1,0 +1,77 @@
+                            | # This program calls a insertBST function twice to insert two
+                            | # nodes into an existing binary search tree.
+                            | # The parameters to minBST are in %rdi and %rsi. 
+                            | # %rdi contains the address of the root node. %rsi contains the
+                            | # address of a node to insert.  A node contains three 8-byte
+                            | # fields: address of left node, address of right node, value of
+                            | # node.
+                            | #
+                            | # This program isn't for the faint-hearted.
+                            | # 
+0x000:                      |        .pos 0
+0x000: 30f40004000000000000 |        irmovq stack, %rsp
+0x00a: 30f70002000000000000 |        irmovq node0, %rdi
+0x014: 30f69002000000000000 |        irmovq newN1, %rsi
+0x01e: 804500000000000000   |        call insertBST
+0x027: 30f70002000000000000 |        irmovq node0, %rdi
+0x031: 30f6a802000000000000 |        irmovq newN2, %rsi
+0x03b: 804500000000000000   |        call insertBST
+0x044: 00                   |        halt   
+                            | #
+0x045:                      | insertBST: #address of root node is in %rdi
+                            |        #address of node to insert is in %rsi 
+0x045: 50071000000000000000 |        mrmovq 16(%rdi), %rax
+0x04f: 50161000000000000000 |        mrmovq 16(%rsi), %rcx
+0x059: 2012                 |        rrmovq %rcx, %rdx
+0x05b: 6102                 |        subq %rax, %rdx
+0x05d: 728f00000000000000   |        jl smaller
+                            |        #check for a right node
+0x066: 30f50000000000000000 |        irmovq 0, %rbp
+0x070: 50370800000000000000 |        mrmovq 8(%rdi), %rbx
+0x07a: 6135                 |        subq %rbx, %rbp
+0x07c: 74cc00000000000000   |        jne incrementright
+0x085: 40670800000000000000 |        rmmovq %rsi, 8(%rdi)
+0x08f:                      | smaller:
+                            |        #check for a left node
+0x08f: 30f50000000000000000 |        irmovq 0, %rbp
+0x099: 50370000000000000000 |        mrmovq (%rdi), %rbx
+0x0a3: 6135                 |        subq %rbx, %rbp
+0x0a5: 74b900000000000000   |        jne incrementleft
+0x0ae: 40670000000000000000 |        rmmovq %rsi, (%rdi)
+0x0b8: 90                   | done:  ret
+                            | 
+0x0b9:                      | incrementleft:
+0x0b9: 50770000000000000000 |        mrmovq (%rdi), %rdi
+0x0c3: 704500000000000000   |        jmp insertBST
+                            |        
+0x0cc:                      | incrementright:
+0x0cc: 50770800000000000000 |        mrmovq 8(%rdi), %rdi
+0x0d6: 704500000000000000   |        jmp insertBST
+                            | #
+0x200:                      |        .pos 0x200
+0x200: 1802000000000000     | node0: .quad node1    #address of left child
+0x208: 3002000000000000     |        .quad node2    #address of right child
+0x210: 0a00000000000000     |        .quad 10       #value in the node
+0x218: 4802000000000000     | node1: .quad node3
+0x220: 0000000000000000     |        .quad 0 #should be modified to be newNd1 (0x290)
+0x228: 0400000000000000     |        .quad 4        
+0x230: 6002000000000000     | node2: .quad node4
+0x238: 7802000000000000     |        .quad node5
+0x240: 0f00000000000000     |        .quad 15
+0x248: 0000000000000000     | node3: .quad 0
+0x250: 0000000000000000     |        .quad 0
+0x258: 0200000000000000     |        .quad 2       
+0x260: 0000000000000000     | node4: .quad 0  #should be modified to be newNd2 (0x2a8)
+0x268: 0000000000000000     |        .quad 0
+0x270: 0c00000000000000     |        .quad 12
+0x278: 0000000000000000     | node5: .quad 0
+0x280: 0000000000000000     |        .quad 0
+0x288: 1400000000000000     |        .quad 20
+0x290: 0000000000000000     | newN1: .quad 0
+0x298: 0000000000000000     |        .quad 0
+0x2a0: 0500000000000000     |        .quad 5
+0x2a8: 0000000000000000     | newN2: .quad 0
+0x2b0: 0000000000000000     |        .quad 0
+0x2b8: 0b00000000000000     |        .quad 11
+0x400:                      |        .pos 0x400
+0x400: 0000000000000000     | stack: .quad 0

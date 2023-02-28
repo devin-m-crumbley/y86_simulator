@@ -1,0 +1,38 @@
+#This program counts the number of positive (> 0)
+#numbers in a list. 
+        .pos 0
+#
+#Initialize %rax to 0
+        irmovq nums, %rdi
+        irmovq 0, %rax
+top:    irmovq count, %r13
+        irmovq 8, %r12
+#Get a number out of the list
+        mrmovq (%rdi), %rcx
+#Determine if the number is positive (you'll need a subtract)
+        irmovq 0, %rdx
+        irmovq 1, %rbx
+        subq %rdx, %rcx
+#Add one to %rax if it is positive (you'll need a conditional move)
+        cmovg %rbx, %rsp
+        cmovl %rdx, %rsp
+        addq %rsp, %rax
+#Repeat for each of the five numbers 
+        addq %r12, %rdi
+        subq %rdi, %r13
+        jne top
+#
+#At the end, %rax should have the count of the number
+#of positive numbers (3 for this data)
+#Store the value of %rax in mem[count]
+        irmovq count, %r9
+        rmmovq %rax, (%r9) 
+        halt
+#Here is the list of numbers
+        .align 8
+nums:   .quad 0x23
+        .quad 0x13
+        .quad 0xfffffffffffffff8
+        .quad 0x0
+        .quad 0x11
+count:  .quad 0
